@@ -30,7 +30,7 @@ for year in YEAR_RANGE:
             'Year': year,
             'Team': team.team_name,
             'Owner ID': team.owners[0]['id'],
-            'Owner Name': f"{team.owners[0]['firstName']} {team.owners[0]['lastName']}",
+            'Owner Name': f"{team.owners[0]['firstName'][0]}{team.owners[0]['lastName'][0]}",
             'Wins': team.wins,
             'Losses': team.losses,
             'Points For': team.points_for,

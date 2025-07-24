@@ -36,7 +36,7 @@ for year in YEAR_RANGE:
 
     team_map = {team.team_id: team for team in league.teams}
     id_map = {team.team_id: team.owners[0]['id'] for team in league.teams}
-    name_map = {team.owners[0]['id']: f"{team.owners[0]['firstName']} {team.owners[0]['lastName']}" for team in league.teams}
+    name_map = {team.owners[0]['id']: f"{team.owners[0]['firstName'][0]}{team.owners[0]['lastName'][0]}" for team in league.teams}
     owner_id_to_name.update(name_map)
 
     for week in range(1, league.settings.reg_season_count + 1):
