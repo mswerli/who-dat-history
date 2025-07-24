@@ -28,7 +28,6 @@ for year in YEAR_RANGE:
     for team in league.teams:
         history_data.append({
             'Year': year,
-            'Team': team.team_name,
             'Owner ID': team.owners[0]['id'],
             'Owner Name': f"{team.owners[0]['firstName'][0]}{team.owners[0]['lastName'][0]}",
             'Wins': team.wins,

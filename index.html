@@ -123,7 +123,6 @@ fetch("league_history.csv")
     const { headers, rows } = parseCSV(csv);
     const index = {
       year: headers.indexOf("Year"),
-      team: headers.indexOf("Team"),
       ownerId: headers.indexOf("Owner ID"),
       ownerName: headers.indexOf("Owner Name"),
       wins: headers.indexOf("Wins"),
@@ -217,7 +216,6 @@ fetch("league_history.csv")
       const table = document.createElement("table");
       table.innerHTML = `
         <thead><tr>
-          <th>Team</th>
           <th>Owner Name</th>
           <th>Wins</th>
           <th>Losses</th>
@@ -236,15 +234,14 @@ fetch("league_history.csv")
       }).sort((a, b) => b.wp - a.wp || b.pf - a.pf)
         .map((entry, i) => ({ ...entry, rank: i + 1 }))
         .forEach(({ row, rank }) => {
-          const teamDisplay = row[index.team] + (row[index.standing] === "1" ? " *" : "");
+          const ownerDisplay = row[index.ownerName] + (row[index.standing] === "1" ? " *" : "");
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td>${teamDisplay}</td>
-            <td>${row[index.ownerName]}</td>
+            <td>${ownerDisplay}</td>
             <td>${row[index.wins]}</td>
             <td>${row[index.losses]}</td>
-            <td>${row[index.pf]}</td>
-            <td>${row[index.pa]}</td>
+            <td>${parseFloat(row[index.pf]).toFixed(2)}</td>
+            <td>${parseFloat(row[index.pa]).toFixed(2)}</td>
           `;
           tbody.appendChild(tr);
         });
