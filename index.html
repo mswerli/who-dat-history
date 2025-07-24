@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>League History</title>
+    <style>
+        body {{ font-family: Arial, sans-serif; padding: 20px; }}
+        h1 {{ text-align: center; }}
+        table {{ border-collapse: collapse; width: 100%; margin-top: 20px; }}
+        th, td {{ border: 1px solid #ddd; padding: 8px; text-align: center; }}
+        th {{ background-color: #f2f2f2; }}
+    </style>
+</head>
+<body>
+    <h1>Fantasy Football League History</h1>
+    <table id="standings-table">
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Team</th>
+                <th>Owner</th>
+                <th>Wins</th>
+                <th>Losses</th>
+                <th>Points For</th>
+                <th>Points Against</th>
+                <th>Final Standing</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be populated here -->
+        </tbody>
+    </table>
+
+    <script>
+        fetch('league_history.csv')
+            .then(response => response.text())
+            .then(csv => {
+                const rows = csv.trim().split('\n').slice(1);
+                const table = document.querySelector('#standings-table tbody');
+                rows.forEach(row => {
+                    const cols = row.split(',');
+                    const tr = document.createElement('tr');
+                    cols.forEach(col => {
+                        const td = document.createElement('td');
+                        td.textContent = col;
+                        tr.appendChild(td);
+                    });
+                    table.appendChild(tr);
+                });
+            });
+    </script>
+</body>
+</html>
