@@ -1,54 +1,331 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>League History</title>
-    <style>
-        body {{ font-family: Arial, sans-serif; padding: 20px; }}
-        h1 {{ text-align: center; }}
-        table {{ border-collapse: collapse; width: 100%; margin-top: 20px; }}
-        th, td {{ border: 1px solid #ddd; padding: 8px; text-align: center; }}
-        th {{ background-color: #f2f2f2; }}
-    </style>
+<meta charset="utf-8"/>
+<title>League History</title>
+<style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { text-align: center; }
+    details { margin-bottom: 20px; }
+    summary { font-size: 1.2em; font-weight: bold; cursor: pointer; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background-color: #f2f2f2; cursor: pointer; }
+</style>
 </head>
 <body>
-    <h1>Fantasy Football League History</h1>
-    <table id="standings-table">
-        <thead>
-            <tr>
-                <th>Year</th>
-                <th>Team</th>
-                <th>Owner</th>
-                <th>Wins</th>
-                <th>Losses</th>
-                <th>Points For</th>
-                <th>Points Against</th>
-                <th>Final Standing</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data will be populated here -->
-        </tbody>
-    </table>
+<div>
+  <button onclick="showTab('history-tab')">League History</button>
+  <button onclick="showTab('h2h-tab')">Head to Head</button>
+</div>
 
-    <script>
-        fetch('league_history.csv')
-            .then(response => response.text())
-            .then(csv => {
-                const rows = csv.trim().split('\n').slice(1);
-                const table = document.querySelector('#standings-table tbody');
-                rows.forEach(row => {
-                    const cols = row.split(',');
-                    const tr = document.createElement('tr');
-                    cols.forEach(col => {
-                        const td = document.createElement('td');
-                        td.textContent = col;
-                        tr.appendChild(td);
-                    });
-                    table.appendChild(tr);
-                });
-            });
-    </script>
+<div id="history-tab" style="display: block;">
+  <h1>Fantasy Football League History</h1>
+  <details open="">
+    <summary>Overall Record by Owner (5+ Seasons)</summary>
+    <table id="overall-table">
+      <thead>
+        <tr>
+          <th>Owner Name</th>
+          <th>Seasons</th>
+          <th>Wins</th>
+          <th>Losses</th>
+          <th>Win %</th>
+          <th>Point Diff</th>
+          <th>League Championships</th>
+          <th>Reg Season Championships</th>
+          <th>Avg Reg Season Rank</th>
+          <th>Sacko Titles</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </details>
+  <h2>Season Records</h2><p><em>* = League Champion</em></p>
+  <div id="tables-container"></div>
+</div>
+
+<div id="h2h-tab" style="display: none;">
+  <h2>Head to Head Records</h2>
+  <label for="owner-select">Select Owner:</label>
+  <select id="owner-select" onchange="filterH2H()"></select>
+  <table border="1" id="h2h-table">
+    <thead>
+      <tr><th>Opponent</th><th>Games Played</th><th>Wins</th><th>Losses</th><th>Ties</th><th>Points For</th><th>Points Against</th><th>Point Diff</th><th>Win %</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+function showTab(tabId) {
+  document.getElementById('history-tab').style.display = 'none';
+  document.getElementById('h2h-tab').style.display = 'none';
+  document.getElementById(tabId).style.display = 'block';
+}
+
+function parseCSV(csv) {
+  const lines = csv.trim().split("\n");
+  const headers = lines[0].split(",");
+  const rows = lines.slice(1).map(line => {
+    const values = [];
+    let current = '';
+    let inQuotes = false;
+    for (let char of line) {
+      if (char === '"' && inQuotes) {
+        inQuotes = false;
+      } else if (char === '"' && !inQuotes) {
+        inQuotes = true;
+      } else if (char === ',' && !inQuotes) {
+        values.push(current);
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    values.push(current);
+    return values;
+  });
+  return { headers, rows };
+}
+
+function makeTableSortable(table) {
+  const headers = table.querySelectorAll("th");
+  headers.forEach((th, index) => {
+    th.addEventListener("click", () => sortTable(table, index));
+  });
+}
+
+function sortTable(table, colIndex) {
+  const tbody = table.querySelector("tbody");
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+  const isNumeric = !isNaN(rows[0].children[colIndex].textContent.replace('%', ''));
+  const currentOrder = table.getAttribute(`data-sort-dir-${colIndex}`) || "asc";
+  const nextOrder = currentOrder === "asc" ? "desc" : "asc";
+
+  rows.sort((a, b) => {
+    let cellA = a.children[colIndex].textContent.replace('%', '');
+    let cellB = b.children[colIndex].textContent.replace('%', '');
+    if (isNumeric) {
+      return (nextOrder === "asc" ? 1 : -1) * (parseFloat(cellA) - parseFloat(cellB));
+    } else {
+      return (nextOrder === "asc" ? 1 : -1) * cellA.localeCompare(cellB);
+    }
+  });
+
+  table.setAttribute(`data-sort-dir-${colIndex}`, nextOrder);
+  rows.forEach(row => tbody.appendChild(row));
+}
+
+fetch("league_history.csv")
+  .then(res => res.text())
+  .then(csv => {
+    const { headers, rows } = parseCSV(csv);
+    const index = {
+      year: headers.indexOf("Year"),
+      team: headers.indexOf("Team"),
+      ownerId: headers.indexOf("Owner ID"),
+      ownerName: headers.indexOf("Owner Name"),
+      wins: headers.indexOf("Wins"),
+      losses: headers.indexOf("Losses"),
+      pf: headers.indexOf("Points For"),
+      pa: headers.indexOf("Points Against"),
+      standing: headers.indexOf("Final Standing")
+    };
+
+    const seasonMap = {}, ownerStats = {};
+
+    for (let row of rows) {
+      const year = row[index.year];
+      if (!seasonMap[year]) seasonMap[year] = [];
+      seasonMap[year].push(row);
+    }
+
+    for (const year in seasonMap) {
+      const teams = seasonMap[year].map(row => {
+        const wins = parseInt(row[index.wins]);
+        const losses = parseInt(row[index.losses]);
+        const pf = parseFloat(row[index.pf]);
+        const wp = wins / (wins + losses);
+        return { row, wins, losses, pf, wp };
+      }).sort((a, b) => b.wp - a.wp || b.pf - a.pf);
+
+      teams.forEach((team, i) => {
+        const row = team.row;
+        const id = row[index.ownerId];
+        const name = row[index.ownerName];
+        const wins = team.wins, losses = team.losses;
+        const pf = team.pf, pa = parseFloat(row[index.pa]);
+        const final = parseInt(row[index.standing]), rank = i + 1;
+
+        if (!ownerStats[id]) {
+          ownerStats[id] = {
+            sacko: 0, name, seasons: 0, wins: 0, losses: 0, pf: 0, pa: 0,
+            champ: 0, regChamp: 0, regRankSum: 0
+          };
+        }
+
+        const owner = ownerStats[id];
+        owner.name = name;
+        owner.seasons++;
+        owner.wins += wins;
+        owner.losses += losses;
+        owner.pf += pf;
+        owner.pa += pa;
+        owner.regRankSum += rank;
+        if (rank === teams.length) owner.sacko++;
+        if (rank === 1) owner.regChamp++;
+        if (final === 1) owner.champ++;
+      });
+    }
+
+    const tbody = document.querySelector("#overall-table tbody");
+    Object.values(ownerStats)
+      .filter(o => o.seasons >= 5)
+      .sort((a, b) => (b.wins / (b.wins + b.losses)) - (a.wins / (a.wins + a.losses)))
+      .forEach(o => {
+        const wp = o.wins / (o.wins + o.losses);
+        const diff = o.pf - o.pa;
+        const avgRank = o.regRankSum / o.seasons;
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${o.name}</td>
+          <td>${o.seasons}</td>
+          <td>${o.wins}</td>
+          <td>${o.losses}</td>
+          <td>${(wp * 100).toFixed(1)}%</td>
+          <td>${diff.toFixed(1)}</td>
+          <td>${o.champ}</td>
+          <td>${o.regChamp}</td>
+          <td>${avgRank.toFixed(2)}</td>
+          <td>${o.sacko}</td>
+        `;
+        tbody.appendChild(row);
+      });
+
+    makeTableSortable(document.getElementById("overall-table"));
+
+    const container = document.getElementById("tables-container");
+    const sortedYears = Object.keys(seasonMap).sort((a, b) => b - a);
+    for (let year of sortedYears) {
+      const details = document.createElement("details");
+      if (year === "2024") details.setAttribute("open", true);
+      const summary = document.createElement("summary");
+      summary.textContent = `Season ${year}`;
+      details.appendChild(summary);
+
+      const table = document.createElement("table");
+      table.innerHTML = `
+        <thead><tr>
+          <th>Team</th>
+          <th>Owner Name</th>
+          <th>Wins</th>
+          <th>Losses</th>
+          <th>Points For</th>
+          <th>Points Against</th>
+        </tr></thead>
+      `;
+
+      const tbody = document.createElement("tbody");
+      [...seasonMap[year]].map(row => {
+        const wins = parseInt(row[index.wins]);
+        const losses = parseInt(row[index.losses]);
+        const pf = parseFloat(row[index.pf]);
+        const wp = wins / (wins + losses);
+        return { row, wins, losses, pf, wp };
+      }).sort((a, b) => b.wp - a.wp || b.pf - a.pf)
+        .map((entry, i) => ({ ...entry, rank: i + 1 }))
+        .forEach(({ row, rank }) => {
+          const teamDisplay = row[index.team] + (row[index.standing] === "1" ? " *" : "");
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${teamDisplay}</td>
+            <td>${row[index.ownerName]}</td>
+            <td>${row[index.wins]}</td>
+            <td>${row[index.losses]}</td>
+            <td>${row[index.pf]}</td>
+            <td>${row[index.pa]}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      table.appendChild(tbody);
+      details.appendChild(table);
+      container.appendChild(details);
+      makeTableSortable(table);
+    }
+  });
+
+let h2hData = {};
+function filterH2H() {
+  const owner = document.getElementById("owner-select").value;
+  const table = document.getElementById("h2h-table").getElementsByTagName("tbody")[0];
+  table.innerHTML = "";
+
+  if (!h2hData[owner]) return;
+
+  const rows = h2hData[owner].map(row => {
+    const diff = parseFloat(row["Points For"]) - parseFloat(row["Points Against"]);
+    const winPctRaw = parseFloat(row["Win %"]);
+    const winPct = isNaN(winPctRaw) ? "0.00%" : (winPctRaw).toFixed(2) + "%";
+    return { ...row, "Point Diff": diff.toFixed(2), "Formatted Win %": winPct };
+  });
+
+  rows.sort((a, b) => parseInt(b["Games Played"]) - parseInt(a["Games Played"]));
+  for (const row of rows) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${row['Opponent Name']}</td>
+      <td>${row['Games Played']}</td>
+      <td>${row['Wins']}</td>
+      <td>${row['Losses']}</td>
+      <td>${row['Ties']}</td>
+      <td>${parseFloat(row['Points For']).toFixed(2)}</td>
+      <td>${parseFloat(row['Points Against']).toFixed(2)}</td>
+      <td>${row['Point Diff']}</td>
+      <td>${row['Formatted Win %']}</td>
+    `;
+    table.appendChild(tr);
+  }
+}
+
+fetch("head_to_head_lifetime.csv")
+  .then(response => response.text())
+  .then(text => {
+    const lines = text.trim().split("\n");
+    const headers = lines[0].split(",");
+    const data = lines.slice(1).map(l => {
+      const values = l.split(",");
+      const row = {};
+      headers.forEach((h, i) => row[h] = values[i]);
+      return row;
+    });
+
+    const select = document.getElementById("owner-select");
+    const seasonCounts = {}, names = {};
+    data.forEach(r => {
+      if (!seasonCounts[r["Owner Name"]]) {
+        seasonCounts[r["Owner Name"]] = 0;
+        names[r["Owner Name"]] = r["Owner ID"];
+      }
+      seasonCounts[r["Owner Name"]]++;
+    });
+
+    Object.keys(seasonCounts).filter(k => seasonCounts[k] >= 5).sort().forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.innerText = name;
+      select.appendChild(opt);
+    });
+
+    for (const row of data) {
+      const owner = row["Owner Name"];
+      if (!h2hData[owner]) h2hData[owner] = [];
+      h2hData[owner].push(row);
+    }
+    filterH2H();
+  });
+  makeTableSortable(document.getElementById("h2h-table"));
+
+</script>
 </body>
 </html>
