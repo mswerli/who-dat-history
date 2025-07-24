@@ -18,6 +18,7 @@
   <button onclick="showTab('history-tab')">League History</button>
   <button onclick="showTab('h2h-tab')">Head to Head</button>
   <button onclick="showTab('records-tab')">All-Time Records</button>
+  <button onclick="showTab('payouts-tab')">Weekly Payouts</button>
 </div>
 
 <div id="history-tab" style="display: block;">
@@ -82,13 +83,42 @@
       </thead>
       <tbody></tbody>
     </table>
-<div>
+</div>
+<div id="payouts-tab" style="display: none;">
+    <h2>Weekly Payouts</h2>
+    <table id="payouts-table">
+        <thead>
+            <tr>
+              <th>Week</th>
+              <th>Payout Type</th>
+              <th>Winner</th>
+              <th>Player(s)</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <details close>
+            <summary style="font-size: 1.1em; font-weight: bold; cursor: pointer;">Total Season Payouts by Owner</summary>
+            <table id="season-leaderboard" style="margin-top: 10px;">
+              <thead>
+                <tr>
+                  <th>Owner</th>
+                  <th>Total Payouts</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </details>
 <script>
 function showTab(tabId) {
   document.getElementById('history-tab').style.display = 'none';
   document.getElementById('h2h-tab').style.display = 'none';
+  document.getElementById('records-tab').style.display = 'none';
+  document.getElementById('payouts-tab').style.display = 'none';
   document.getElementById(tabId).style.display = 'block';
 }
+
 
 function parseCSV(csv) {
   const lines = csv.trim().split("\n");
@@ -403,6 +433,53 @@ function renderRecordsTable(records) {
     tbody.appendChild(tr);
   });
 }
+fetch("weekly_payout_winners.csv")
+  .then(response => response.text())
+  .then(text => {
+    const lines = text.trim().split("\n");
+    const headers = lines[0].split(",");
+    const rows = lines.slice(1).map(line => line.split(","));
+    const payoutTbody = document.querySelector("#payouts-table tbody");
+    const leaderboardTbody = document.querySelector("#season-leaderboard tbody");
+
+    const ownerTotals = {};
+
+    rows.forEach(row => {
+      if (row.length < 5 || !row[0]) return;
+
+      const [week, award, winner, players, points] = row;
+
+      // Populate payouts table
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${week}</td>
+        <td>${award}</td>
+        <td>${winner}</td>
+        <td>${players}</td>
+        <td>${points}</td>
+      `;
+      payoutTbody.appendChild(tr);
+
+      // Tally for leaderboard
+      if (!ownerTotals[winner]) {
+        ownerTotals[winner] = 0;
+      }
+      ownerTotals[winner] += 1; // If payout value varies, replace with actual value
+    });
+
+    // Populate leaderboard table
+    Object.entries(ownerTotals)
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([owner, total]) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${owner}</td><td>${total}</td>`;
+        leaderboardTbody.appendChild(row);
+      });
+
+    makeTableSortable(document.getElementById("payouts-table"));
+    makeTableSortable(document.getElementById("season-leaderboard"));
+  });
+
 </script>
 </body>
 </html>
