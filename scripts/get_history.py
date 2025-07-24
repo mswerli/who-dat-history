@@ -10,7 +10,7 @@ with open(CREDS_FILE) as f:
 
 # === USER CONFIGURATION ===
 LEAGUE_ID = 885349          # Replace with your ESPN league ID
-YEAR_RANGE = range(2013, 2024)  # Adjust start/end years as needed
+YEAR_RANGE = range(2013, 2025)  # Adjust start/end years as needed
 SWID = CREDS['swid']       # Copy this from your browser cookies
 ESPN_S2 = CREDS['espn_s2']    # Copy this from your browser cookies
 

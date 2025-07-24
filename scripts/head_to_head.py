@@ -6,7 +6,7 @@ from collections import defaultdict
 # === Configuration ===
 CREDS_FILE = '../ignore/espn_creds.json'
 LEAGUE_ID = 885349
-YEAR_RANGE = range(2013, 2024)  # Adjust as needed
+YEAR_RANGE = range(2013, 2025)  # Adjust as needed
 
 # === Load credentials ===
 with open(CREDS_FILE) as f:
