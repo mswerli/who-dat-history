@@ -1,68 +1,13 @@
-Category,Owner,Detail,Points,Year,Week
-Most Points (Team Game),dk,,191.92,2019,5
-Least Points (Team Game),CR,,51.72,2019,6
-Most Points (Team Season),TM,,1810.14,2019,
-Least Points (Team Season),MS,,1225.0,2019,
-Top Player (Single Game),MS,Sammy Watkins,48.3,2019,1
-Top WR (Single Game),MS,Sammy Watkins,48.3,2019,1
-Top RB (Single Game),dk,Christian McCaffrey,47.7,2019,5
-Top TE (Single Game),TM,Darren Waller,28.1,2019,7
-Top QB (Single Game),CC,Aaron Rodgers,46.76,2019,7
-Top K (Single Game),DP,Matt Prater,21.0,2019,6
-Top D/ST (Single Game),DW,Patriots D/ST,35.0,2019,2
-Most Points (Team Game),MS,,169.54,2020,8
-Least Points (Team Game),CR,,62.78,2020,14
-Most Points (Team Season),MS,,1767.14,2020,
-Least Points (Team Season),DP,,1390.7,2020,
-Top Player (Single Game),dk,Tyreek Hill,57.4,2020,12
-Top RB (Single Game),MS,Dalvin Cook,50.6,2020,8
-Top TE (Single Game),dk,Darren Waller,38.5,2020,13
-Top WR (Single Game),dk,Tyreek Hill,57.4,2020,12
-Top QB (Single Game),AK,Patrick Mahomes,43.0,2020,3
-Top K (Single Game),TM,Younghoe Koo,21.0,2020,12
-Top D/ST (Single Game),RP,Colts D/ST,27.0,2020,3
-Most Points (Team Game),DW,,201.98,2021,4
-Least Points (Team Game),DP,,45.5,2021,15
-Most Points (Team Season),AK,,1911.1,2021,
-Least Points (Team Season),TM,,1398.48,2021,
-Top Player (Single Game),AK,Jonathan Taylor,51.9,2021,11
-Top RB (Single Game),AK,Jonathan Taylor,51.9,2021,11
-Top WR (Single Game),CR,Tyreek Hill,45.1,2021,4
-Top QB (Single Game),DW,Justin Herbert,48.82,2021,5
-Top D/ST (Single Game),CR,Patriots D/ST,26.0,2021,11
-Top K (Single Game),ac,Graham Gano,22.0,2021,2
-Top TE (Single Game),CR,George Kittle,38.1,2021,13
-Most Points (Team Game),dk,,167.82,2022,9
-Least Points (Team Game),RP,,65.06,2022,11
-Most Points (Team Season),ac,,1880.62,2022,
-Least Points (Team Season),MS,,1473.32,2022,
-Top Player (Single Game),TM,Joe Mixon,53.1,2022,9
-Top RB (Single Game),TM,Joe Mixon,53.1,2022,9
-Top WR (Single Game),DP,Tyreek Hill,42.5,2022,2
-Top D/ST (Single Game),AK,Browns D/ST,31.0,2022,13
-Top QB (Single Game),DP,Lamar Jackson,48.62,2022,2
-Top TE (Single Game),TM,T.J. Hockenson,35.9,2022,4
-Top K (Single Game),TM,Tyler Bass,23.0,2022,11
-Most Points (Team Game),AK,,188.12,2023,8
-Least Points (Team Game),ac,,53.66,2023,12
-Most Points (Team Season),MD,,1971.5,2023,
-Least Points (Team Season),CR,,1636.98,2023,
-Top Player (Single Game),MS,DJ Moore,48.0,2023,5
-Top RB (Single Game),TM,Christian McCaffrey,45.2,2023,4
-Top WR (Single Game),MS,DJ Moore,48.0,2023,5
-Top TE (Single Game),TM,Travis Kelce,29.9,2023,7
-Top QB (Single Game),TM,C.J. Stroud,44.8,2023,9
-Top K (Single Game),DW,Brandon Aubrey,23.0,2023,14
-Top D/ST (Single Game),RP,Cowboys D/ST,35.0,2023,1
-Most Points (Team Game),AK,,185.82,2024,14
-Least Points (Team Game),MC,,62.66,2024,7
-Most Points (Team Season),DP,,1869.66,2024,
-Least Points (Team Season),ac,,1432.54,2024,
-Top Player (Single Game),MS,Josh Allen,57.88,2024,14
-Top QB (Single Game),MS,Josh Allen,57.88,2024,14
-Top TE (Single Game),CC,Taysom Hill,40.52,2024,11
-Top RB (Single Game),DP,Saquon Barkley,50.2,2024,12
-Top WR (Single Game),MD,Ja'Marr Chase,55.9,2024,10
-Top K (Single Game),DW,Jake Moody,26.0,2024,1
-Top D/ST (Single Game),DW,Bears D/ST,26.0,2024,1
-Top Player (Season),DW,Patrick Mahomes,365.14,2022,
+Category,Record,Owner,Detail,Points,Year,Week
+Team Game,Most Points,DW,,201.98,2021,4
+Team Game,Least Points,DP,,45.5,2021,15
+Team Season,Most Points,AK,,10562.52,,
+Team Season,Least Points,MC,,1592.1,,
+Single Game,Top Player,MS,Josh Allen,57.88,2024,14
+Single Game,Top WR,dk,Tyreek Hill,57.4,2020,12
+Single Game,Top RB,TM,Joe Mixon,53.1,2022,9
+Single Game,Top TE,CC,Taysom Hill,40.52,2024,11
+Single Game,Top QB,MS,Josh Allen,57.88,2024,14
+Single Game,Top K,DW,Jake Moody,26.0,2024,1
+Single Game,Top D/ST,DW,Patriots D/ST,35.0,2019,2
+Season,Top Player,DP,Lamar Jackson,758.08,,

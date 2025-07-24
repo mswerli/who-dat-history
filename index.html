@@ -17,6 +17,7 @@
 <div>
   <button onclick="showTab('history-tab')">League History</button>
   <button onclick="showTab('h2h-tab')">Head to Head</button>
+  <button onclick="showTab('records-tab')">All-Time Records</button>
 </div>
 
 <div id="history-tab" style="display: block;">
@@ -57,6 +58,30 @@
   </table>
 </div>
 
+<div id="records-tab" style="display: none;">
+    <h2>All-Time Records</h2>
+
+    <label for="category-filter">Filter by Category:</label>
+    <select id="category-filter">
+      <option value="All">All</option>
+      <option value="Team Game">Team Game</option>
+      <option value="Single Game">Single Game</option>
+    </select>
+    
+    <table id="records-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Record</th>
+          <th>Owner</th>
+          <th>Detail</th>
+          <th>Points</th>
+          <th>Year</th>
+          <th>Week</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
 <script>
 function showTab(tabId) {
   document.getElementById('history-tab').style.display = 'none';
@@ -322,7 +347,61 @@ fetch("head_to_head_lifetime.csv")
     filterH2H();
   });
   makeTableSortable(document.getElementById("h2h-table"));
+  let allRecords = [];
 
+fetch("all_time_records.csv")
+  .then(response => response.text())
+  .then(text => {
+    const lines = text.trim().split("\n");
+    const headers = lines[0].split(",");
+    allRecords = lines.slice(1).map(line => {
+      const row = line.split(",");
+      return {
+        Category: row[0],
+        Record: row[1],
+        Owner: row[2],
+        Detail: row[3],
+        Points: row[4],
+        Year: row[5],
+        Week: row[6]
+      };
+    });
+
+    // Only keep Team Game and Single Game
+    allRecords = allRecords.filter(r =>
+      r.Category === "Team Game" || r.Category === "Single Game"
+    );
+
+    renderRecordsTable(allRecords);
+    makeTableSortable(document.getElementById("records-table"));
+  });
+
+// Filter and render based on dropdown selection
+document.getElementById("category-filter").addEventListener("change", function () {
+  const selected = this.value;
+  const filtered = selected === "All"
+    ? allRecords
+    : allRecords.filter(r => r.Category === selected);
+  renderRecordsTable(filtered);
+});
+
+function renderRecordsTable(records) {
+  const tbody = document.querySelector("#records-table tbody");
+  tbody.innerHTML = "";
+  records.forEach(record => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${record.Category}</td>
+      <td>${record.Record}</td>
+      <td>${record.Owner}</td>
+      <td>${record.Detail}</td>
+      <td>${record.Points}</td>
+      <td>${record.Year}</td>
+      <td>${record.Week}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
 </script>
 </body>
 </html>
