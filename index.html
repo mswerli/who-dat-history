@@ -14,12 +14,13 @@
 </style>
 </head>
 <body>
-<div>
-  <button onclick="showTab('history-tab')">League History</button>
-  <button onclick="showTab('h2h-tab')">Head to Head</button>
-  <button onclick="showTab('records-tab')">All-Time Records</button>
-  <button onclick="showTab('payouts-tab')">Weekly Payouts</button>
-</div>
+  <div>
+    <button onclick="showTab('history-tab')">League History</button>
+    <button onclick="showTab('h2h-tab')">Head to Head</button>
+    <button onclick="showTab('records-tab')">All-Time Records</button>
+    <button onclick="showTab('payouts-tab')">Weekly Payouts</button>
+    <button onclick="showTab('habits-tab')">Owner Habits</button>
+  </div>
 
 <div id="history-tab" style="display: block;">
   <h1>Fantasy Football League History</h1>
@@ -110,6 +111,21 @@
               <tbody></tbody>
             </table>
           </details>
+        </div>
+        <div id="habits-tab" style="display: none;">
+          <h2>Owner Habits – Most Drafted Players</h2>
+          <table id="habits-table">
+            <thead>
+              <tr>
+                <th>Owner Name</th>
+                <th>Most Drafted Player</th>
+                <th>Times Drafted</th>
+                <th>Drafted Seasons</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
 <script>
 function showTab(tabId) {
   document.getElementById('history-tab').style.display = 'none';
@@ -479,6 +495,28 @@ fetch("weekly_payout_winners.csv")
     makeTableSortable(document.getElementById("payouts-table"));
     makeTableSortable(document.getElementById("season-leaderboard"));
   });
+  fetch("most_drafted_players.csv")
+  .then(response => response.text())
+  .then(text => {
+    const lines = text.trim().split("\n");
+    const headers = lines[0].split(",");
+    const rows = lines.slice(1).map(line => line.split(","));
+
+    const tbody = document.querySelector("#habits-table tbody");
+    for (const row of rows) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${row[1]}</td> <!-- Owner Name -->
+        <td>${row[2]}</td> <!-- Most Drafted Player -->
+        <td>${row[3]}</td> <!-- Times Drafted -->
+        <td>${row[4]}</td> <!-- Drafted Seasons -->
+      `;
+      tbody.appendChild(tr);
+    }
+
+    makeTableSortable(document.getElementById("habits-table"));
+  });
+
 
 </script>
 </body>
