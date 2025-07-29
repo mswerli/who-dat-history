@@ -20,8 +20,8 @@
     <button onclick="showTab('records-tab')">All-Time Records</button>
     <button onclick="showTab('payouts-tab')">Weekly Payouts</button>
     <button onclick="showTab('habits-tab')">Owner Habits</button>
+    <button onclick="showTab('advanced-tab')">Advanced Metrics</button>
   </div>
-
 <div id="history-tab" style="display: block;">
   <h1>Fantasy Football League History</h1>
   <details open="">
@@ -125,6 +125,50 @@
             </thead>
             <tbody></tbody>
           </table>
+        
+          <h2>Positional Contributions</h2>
+          <details open>
+            <summary>Overall Positional Breakdown by Owner</summary>
+            <table id="position-overall-table">
+              <thead>
+                <tr>
+                  <th>Owner</th>
+                  <th>Total Points</th>
+                  <th>QB %</th>
+                  <th>RB %</th>
+                  <th>WR %</th>
+                  <th>TE %</th>
+                  <th>K %</th>
+                  <th>D/ST %</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </details>
+        
+          <div id="position-seasons-container"></div>
+        </div>
+        <div id="advanced-tab" style="display: none;">
+          <h2>Advanced Team Metrics</h2>
+        
+          <details open>
+            <summary>Overall Summary by Owner (Since 2019)</summary>
+            <table id="advanced-overall-table">
+              <thead>
+                <tr>
+                  <th>Owner</th>
+                  <th>True W/L</th>
+                  <th>True W/L %</th>
+                  <th>Luck Index</th>
+                  <th>Strength of Schedule</th>
+                  <th>Manager Efficiency</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </details>
+        
+          <div id="advanced-seasons-container"></div>
         </div>
 <script>
 function showTab(tabId) {
@@ -280,7 +324,6 @@ fetch("league_history.csv")
     const sortedYears = Object.keys(seasonMap).sort((a, b) => b - a);
     for (let year of sortedYears) {
       const details = document.createElement("details");
-      if (year === "2024") details.setAttribute("open", true);
       const summary = document.createElement("summary");
       summary.textContent = `Season ${year}`;
       details.appendChild(summary);
@@ -515,6 +558,207 @@ fetch("weekly_payout_winners.csv")
     }
 
     makeTableSortable(document.getElementById("habits-table"));
+  });
+
+  fetch("positional_contributions.csv")
+  .then(response => response.text())
+  .then(text => {
+    const { headers, rows } = parseCSV(text);
+    const index = {
+      year: headers.indexOf("Year"),
+      name: headers.indexOf("Owner Name"),
+      total: headers.indexOf("Total Points"),
+      qb: headers.indexOf("QB %"),
+      rb: headers.indexOf("RB %"),
+      wr: headers.indexOf("WR %"),
+      te: headers.indexOf("TE %"),
+      k: headers.indexOf("K %"),
+      dst: headers.indexOf("D/ST %")
+    };
+
+    const seasonMap = {}, overallMap = {};
+
+    for (const row of rows) {
+      const year = row[index.year];
+      if (!seasonMap[year]) seasonMap[year] = [];
+      seasonMap[year].push(row);
+
+      const name = row[index.name];
+      if (!overallMap[name]) {
+        overallMap[name] = { count: 0, total: 0, qb: 0, rb: 0, wr: 0, te: 0, k: 0, dst: 0 };
+      }
+      const o = overallMap[name];
+      o.count++;
+      o.total += parseFloat(row[index.total]);
+      o.qb += parseFloat(row[index.qb]);
+      o.rb += parseFloat(row[index.rb]);
+      o.wr += parseFloat(row[index.wr]);
+      o.te += parseFloat(row[index.te]);
+      o.k += parseFloat(row[index.k]);
+      o.dst += parseFloat(row[index.dst]);
+    }
+
+    const overallTbody = document.querySelector("#position-overall-table tbody");
+    Object.entries(overallMap).forEach(([owner, data]) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${owner}</td>
+        <td>${data.total.toFixed(2)}</td>
+        <td>${(data.qb / data.count).toFixed(2)}%</td>
+        <td>${(data.rb / data.count).toFixed(2)}%</td>
+        <td>${(data.wr / data.count).toFixed(2)}%</td>
+        <td>${(data.te / data.count).toFixed(2)}%</td>
+        <td>${(data.k / data.count).toFixed(2)}%</td>
+        <td>${(data.dst / data.count).toFixed(2)}%</td>
+      `;
+      overallTbody.appendChild(tr);
+    });
+
+    makeTableSortable(document.getElementById("position-overall-table"));
+
+    const container = document.getElementById("position-seasons-container");
+    const sortedYears = Object.keys(seasonMap).sort((a, b) => b - a);
+    for (const year of sortedYears) {
+      const details = document.createElement("details");
+      const summary = document.createElement("summary");
+      summary.textContent = `Season ${year}`;
+      details.appendChild(summary);
+
+      const table = document.createElement("table");
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Owner</th>
+            <th>Total Points</th>
+            <th>QB %</th>
+            <th>RB %</th>
+            <th>WR %</th>
+            <th>TE %</th>
+            <th>K %</th>
+            <th>D/ST %</th>
+          </tr>
+        </thead>
+      `;
+
+      const tbody = document.createElement("tbody");
+      for (const row of seasonMap[year]) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row[index.name]}</td>
+          <td>${parseFloat(row[index.total]).toFixed(2)}</td>
+          <td>${parseFloat(row[index.qb]).toFixed(2)}%</td>
+          <td>${parseFloat(row[index.rb]).toFixed(2)}%</td>
+          <td>${parseFloat(row[index.wr]).toFixed(2)}%</td>
+          <td>${parseFloat(row[index.te]).toFixed(2)}%</td>
+          <td>${parseFloat(row[index.k]).toFixed(2)}%</td>
+          <td>${parseFloat(row[index.dst]).toFixed(2)}%</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      table.appendChild(tbody);
+      details.appendChild(table);
+      container.appendChild(details);
+      makeTableSortable(table);
+    }
+  });
+
+fetch("advanced_team_metrics.csv")
+  .then(response => response.text())
+  .then(text => {
+    const { headers, rows } = parseCSV(text);
+    const index = {
+      year: headers.indexOf("Year"),
+      name: headers.indexOf("Owner Name"),
+      truew: headers.indexOf("Normalized True Wins"),
+      truel: headers.indexOf("Normalized True Losses"),
+      truewl: headers.indexOf("True W/L"),
+      truewlpct: headers.indexOf("True W/L %"),
+      luck: headers.indexOf("Luck Index"),
+      sos: headers.indexOf("Strength of Schedule"),
+      eff: headers.indexOf("Manager Efficiency")
+    };
+
+    const seasonMap = {}, overallMap = {};
+
+    for (const row of rows) {
+      const year = row[index.year];
+      if (!seasonMap[year]) seasonMap[year] = [];
+      seasonMap[year].push(row);
+
+      const name = row[index.name];
+      if (!overallMap[name]) {
+        overallMap[name] = {
+          count: 0, truew: 0, truel: 0, luck: 0, sos: 0, eff: 0
+        };
+      }
+      console.log("Normalized Wins:", row[index.truew], "Losses:", row[index.truel]);
+      const o = overallMap[name];
+      o.count++;
+      o.truew += parseFloat(row[index.truew]);
+      o.truel += parseFloat(row[index.truel]);
+      o.luck += parseFloat(row[index.luck]);
+      o.sos += parseFloat(row[index.sos]);
+      o.eff += parseFloat(row[index.eff]);
+    }
+
+    const overallTbody = document.querySelector("#advanced-overall-table tbody");
+    Object.entries(overallMap).forEach(([owner, data]) => {
+      if (data.count < 3) return;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${owner}</td>
+        <td>${data.truew} - ${data.truel}</td>
+        <td>${(data.truew / (data.truew + data.truel)).toFixed(3)}</td>
+        <td>${(data.luck / data.count).toFixed(3)}</td>
+        <td>${(data.sos / data.count).toFixed(2)}</td>
+        <td>${(data.eff / data.count).toFixed(3)}</td>
+      `;
+      overallTbody.appendChild(tr);
+    });
+    makeTableSortable(document.getElementById("advanced-overall-table"));
+
+    const container = document.getElementById("advanced-seasons-container");
+    const sortedYears = Object.keys(seasonMap).sort((a, b) => b - a);
+    for (const year of sortedYears) {
+      const details = document.createElement("details");
+      const summary = document.createElement("summary");
+      summary.textContent = `Season ${year}`;
+      details.appendChild(summary);
+
+      const table = document.createElement("table");
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Owner</th>
+            <th>True W/L</th>
+            <th>True W/L %</th>
+            <th>Luck Index</th>
+            <th>Strength of Schedule</th>
+            <th>Manager Efficiency</th>
+          </tr>
+        </thead>
+      `;
+
+      const tbody = document.createElement("tbody");
+      for (const row of seasonMap[year]) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${row[index.name]}</td>
+          <td>${row[index.truewl]}</td>
+          <td>${row[index.truewlpct]}</td>
+          <td>${row[index.luck]}</td>
+          <td>${parseFloat(row[index.sos]).toFixed(2)}</td>
+          <td>${parseFloat(row[index.eff]).toFixed(3)}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      table.appendChild(tbody);
+      details.appendChild(table);
+      container.appendChild(details);
+      makeTableSortable(table);
+    }
   });
 
 
