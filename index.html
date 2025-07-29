@@ -172,13 +172,10 @@
         </div>
 <script>
 function showTab(tabId) {
-  document.getElementById('history-tab').style.display = 'none';
-  document.getElementById('h2h-tab').style.display = 'none';
-  document.getElementById('records-tab').style.display = 'none';
-  document.getElementById('payouts-tab').style.display = 'none';
+  const tabs = document.querySelectorAll("div[id$='-tab']");
+  tabs.forEach(tab => tab.style.display = "none");
   document.getElementById(tabId).style.display = 'block';
 }
-
 
 function parseCSV(csv) {
   const lines = csv.trim().split("\n");
