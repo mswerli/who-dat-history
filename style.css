@@ -1,0 +1,152 @@
+/* Reset and base styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom, #f9fafb, #edf2f7);
+    color: #1a202c;
+    padding: 30px;
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: auto;
+  }
+  
+  /* Headings */
+  h1 {
+    font-size: 2em;
+    margin-bottom: 0.5em;
+    color: #2d3748;
+  }
+  
+  h2 {
+    font-size: 1.5em;
+    margin-top: 40px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #cbd5e0;
+    padding-bottom: 4px;
+    color: #2d3748;
+  }
+  
+  /* Sticky nav bar */
+  .navbar {
+    position: sticky;
+    top: 0;
+    background: #f9fafb;
+    padding: 10px 0;
+    z-index: 1000;
+  }
+  
+  /* Navigation buttons */
+  button {
+    background-color: #2b6cb0;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    margin: 0 6px 12px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+  }
+  
+  button:hover {
+    background-color: #2c5282;
+  }
+  
+  /* Table wrapper for scroll support */
+  .table-wrapper {
+    overflow-x: auto;
+    max-width: 100%;
+    margin-top: 10px;
+  }
+  
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+  }
+  
+  th, td {
+    border: 1px solid #e2e8f0;
+    padding: 12px;
+    text-align: center;
+  }
+  
+  th {
+    background-color: #ebf4ff;
+    color: #2b6cb0;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #f7f9fb;
+  }
+  
+  tbody tr:hover {
+    background-color: #f1f5f9;
+  }
+  
+  /* Positive/negative data highlights */
+  .positive {
+    color: #38a169;
+    font-weight: 600;
+  }
+  
+  .negative {
+    color: #e53e3e;
+    font-weight: 600;
+  }
+  
+  /* Dropdowns and labels */
+  label {
+    font-weight: bold;
+    margin-top: 12px;
+    display: inline-block;
+  }
+  
+  select {
+    padding: 6px 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    border: 1px solid #cbd5e0;
+    background-color: white;
+  }
+  
+  /* Expandable details */
+  details {
+    margin: 10px 0 30px 0;
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1em;
+    list-style: none;
+  }
+  
+  summary::after {
+    content: "▼";
+    float: right;
+    font-size: 0.8em;
+    transition: transform 0.3s ease;
+  }
+  
+  details[open] summary::after {
+    content: "▲";
+    transform: rotate(180deg);
+  }
+  
