@@ -150,3 +150,19 @@
     transform: rotate(180deg);
   }
   
+  #weekly-summary-overview {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+  }
+  
+  #weekly-summary-overview th, #weekly-summary-overview td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    text-align: center;
+  }
+  
+  #weekly-summary-overview th {
+    background-color: #f7fafc;
+    color: #2d3748;
+  }

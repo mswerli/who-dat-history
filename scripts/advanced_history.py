@@ -1,15 +1,21 @@
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
 from espn_api.football import League
 import pandas as pd
 import json
 from collections import defaultdict, Counter
 
-# === CONFIGURATION ===
-CREDS_FILE = '../ignore/espn_creds.json'
-with open(CREDS_FILE) as f:
-    CREDS = json.load(f)
+from helpers.utilities import get_credentials, get_owner_map
+
+CREDS = get_credentials()
+OWNER_MAP = get_owner_map()
 
 LEAGUE_ID = 885349
-YEAR_RANGE = range(2019, 2025)
+YEAR_RANGE = range(2019, 2026)
 SWID = CREDS['swid']
 ESPN_S2 = CREDS['espn_s2']
 
@@ -37,8 +43,8 @@ for year in YEAR_RANGE:
     team_wins = {}
     for team in league.teams:
         try:
-            owner_id = team.owners[0]['id']
-            initials = f"{team.owners[0]['firstName'][0]}{team.owners[0]['lastName'][0]}"
+            owner_id = team.team_id
+            initials = OWNER_MAP.get(str(team.team_id))
             team_wins.update({owner_id: (team.wins, team.losses)})
             team_owner_map[team.team_id] = (owner_id, initials)
         except Exception:
@@ -57,7 +63,7 @@ for year in YEAR_RANGE:
         'Games Played': 0,
     })
 
-    week_numbers = sorted(int(w) for w in league.settings.matchup_periods.keys())
+    week_numbers = sorted(int(w) for w in league.settings.matchup_periods.keys() if int(w) < league.currentMatchupPeriod)
 
     for week in week_numbers:
         try:
@@ -68,6 +74,9 @@ for year in YEAR_RANGE:
         weekly_points = {}
 
         for box in box_scores:
+            if isinstance(box.home_team, int) or isinstance(box.away_team, int):
+                continue
+
             for side in ['home', 'away']:
                 team = getattr(box, f"{side}_team")
                 team_id = team.team_id

@@ -10,7 +10,7 @@ with open(CREDS_FILE) as f:
 
 # === CONFIGURATION ===
 LEAGUE_ID = 885349               # Replace with your league ID
-YEAR_RANGE = range(2013, 2025)
+YEAR_RANGE = range(2013, 2026)
 SWID = CREDS['swid']
 ESPN_S2 = CREDS['espn_s2']
 

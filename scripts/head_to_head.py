@@ -1,16 +1,21 @@
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
+
 from espn_api.football import League
 import pandas as pd
 import json
 from collections import defaultdict
 
-# === Configuration ===
-CREDS_FILE = '../ignore/espn_creds.json'
-LEAGUE_ID = 885349
-YEAR_RANGE = range(2013, 2025)  # Adjust as needed
+from helpers.utilities import get_credentials, get_owner_map
 
-# === Load credentials ===
-with open(CREDS_FILE) as f:
-    CREDS = json.load(f)
+CREDS = get_credentials()
+OWNER_MAP = get_owner_map()
+
+LEAGUE_ID = 885349
+YEAR_RANGE = range(2013, 2026)  # Adjust as needed
 
 SWID = CREDS['swid']
 ESPN_S2 = CREDS['espn_s2']

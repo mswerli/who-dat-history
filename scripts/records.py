@@ -8,7 +8,7 @@ with open('../ignore/espn_creds.json') as f:
     creds = json.load(f)
 
 league_id = 885349
-years = range(2019, 2025)
+years = range(2019, 2026)
 swid = creds['swid']
 espn_s2 = creds['espn_s2']
 

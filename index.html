@@ -15,6 +15,22 @@
     table { border-collapse: collapse; width: 100%; margin-top: 10px; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
     th { background-color: #f2f2f2; cursor: pointer; }
+    #survivor-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  #survivor-list li {
+    background-color: #edf2f7; /* light gray-blue */
+    color: #2d3748;            /* dark gray text */
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 0.9em;
+    border: 1px solid #cbd5e0;
+  }
 </style>
 </head>
 <body>
@@ -22,9 +38,9 @@
     <button onclick="showTab('history-tab')">League History</button>
     <button onclick="showTab('h2h-tab')">Head to Head</button>
     <button onclick="showTab('records-tab')">All-Time Records</button>
-    <button onclick="showTab('payouts-tab')">Weekly Payouts</button>
     <button onclick="showTab('habits-tab')">Owner Habits</button>
     <button onclick="showTab('advanced-tab')">Advanced Metrics</button>
+    <button onclick="showTab('summaries-tab')">Weekly Summaries</button>
   </div>
 <div id="history-tab" style="display: block;">
   <h1>Who Dat League History</h1>
@@ -89,33 +105,6 @@
       <tbody></tbody>
     </table>
 </div>
-<div id="payouts-tab" style="display: none;">
-    <h2>Weekly Payouts</h2>
-    <table id="payouts-table">
-        <thead>
-            <tr>
-              <th>Week</th>
-              <th>Payout Type</th>
-              <th>Winner</th>
-              <th>Player(s)</th>
-              <th>Points</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <details close>
-            <summary style="font-size: 1.1em; font-weight: bold; cursor: pointer;">Total Season Payouts by Owner</summary>
-            <table id="season-leaderboard" style="margin-top: 10px;">
-              <thead>
-                <tr>
-                  <th>Owner</th>
-                  <th>Total Payouts</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </details>
-        </div>
         <div id="habits-tab" style="display: none;">
           <h2>Owner Habits – Most Drafted Players</h2>
           <table id="habits-table">
@@ -174,6 +163,26 @@
         
           <div id="advanced-seasons-container"></div>
         </div>
+  <div id="summaries-tab" style="display: none;">
+    <h2>Weekly Summaries</h2>
+    <h3>Alive in Survivor</h3>
+    <ul id="survivor-list" style="margin-bottom: 20px;"></ul>
+    <h3>Summary Overview</h3>
+<table id="weekly-summary-overview" style="margin-bottom: 20px;">
+  <thead>
+    <tr>
+      <th>Owner</th>
+      <th>Payouts Won</th>
+      <th>Survivor Exit (Week)</th>
+      <th>🔥 Regression Plaques</th>
+      <th>🧱 Crawlspace Trophies</th>
+      <th>🧠 Clipboards</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+    <div id="summaries-container"></div>
+</div>
 <script>
 function showTab(tabId) {
   const tabs = document.querySelectorAll("div[id$='-tab']");
@@ -246,7 +255,9 @@ fetch("league_history.csv")
       losses: headers.indexOf("Losses"),
       pf: headers.indexOf("Points For"),
       pa: headers.indexOf("Points Against"),
-      standing: headers.indexOf("Final Standing")
+      standing: headers.indexOf("Final Standing"),
+      sacko: headers.indexOf("Sacko"),
+      champion: headers.indexOf("Champion")
     };
 
     const seasonMap = {}, ownerStats = {};
@@ -265,6 +276,18 @@ fetch("league_history.csv")
         const wp = wins / (wins + losses);
         return { row, wins, losses, pf, wp };
       }).sort((a, b) => b.wp - a.wp || b.pf - a.pf);
+
+      let championName = null;
+      let sackoName = null;
+
+      seasonMap[year].forEach(row => {
+        if (row[index.champion] === "True") {
+          championName = row[index.ownerName];
+        }
+        if (row[index.sacko] === "True") {
+          sackoName = row[index.ownerName];
+        }
+      });
 
       teams.forEach((team, i) => {
         const row = team.row;
@@ -289,7 +312,7 @@ fetch("league_history.csv")
         owner.pf += pf;
         owner.pa += pa;
         owner.regRankSum += rank;
-        if (rank === teams.length) owner.sacko++;
+        if (row[index.sacko] === "True") owner.sacko++;
         if (rank === 1) owner.regChamp++;
         if (final === 1) owner.champ++;
       });
@@ -761,8 +784,153 @@ fetch("advanced_team_metrics.csv")
       makeTableSortable(table);
     }
   });
+  Promise.all([
+  fetch("weekly_efficiency_awards.csv").then(res => res.text()),
+  fetch("survivor_results.json").then(res => res.json()),
+  fetch("weekly_payout_winners.json").then(res => res.json())
+])
+.then(([awardsText, survivorData, payoutData]) => {
+const lines = awardsText.trim().split("\n");
+const headers = lines[0].split(",");
+const rows = lines.slice(1).map(line => line.split(","));
+
+const payoutByWeek = {};
+for (const payout of payoutData) {
+  const week = payout.week;
+  if (!payoutByWeek[week]) payoutByWeek[week] = [];
+  payoutByWeek[week].push(payout);
+}
 
 
+const index = {
+week: headers.indexOf("Week"),
+owner: headers.indexOf("Owner"),
+award: headers.indexOf("Award")
+};
+
+const survivorList = document.getElementById("survivor-list");
+survivorData.remaining
+  .sort()
+  .forEach(owner => {
+    const li = document.createElement("li");
+    li.textContent = owner;
+    survivorList.appendChild(li);
+  });
+
+
+const weekMap = {};
+for (const row of rows) {
+const week = row[index.week];
+const award = row[index.award];
+if (!award || !week) continue;
+
+
+if (!weekMap[week]) weekMap[week] = [];
+weekMap[week].push({ award, owner: row[index.owner] });
+}
+
+
+const eliminatedByWeek = {};
+for (const owner in survivorData.eliminated) {
+const week = survivorData.eliminated[owner];
+if (!eliminatedByWeek[week]) eliminatedByWeek[week] = [];
+eliminatedByWeek[week].push(owner);
+}
+
+
+const container = document.getElementById("summaries-container");
+const sortedWeeks = Object.keys(weekMap).map(Number).sort((a, b) => b - a);
+
+
+for (const week of sortedWeeks) {
+const details = document.createElement("details");
+const summary = document.createElement("summary");
+summary.textContent = `Week ${week}`;
+details.appendChild(summary);
+
+
+const list = document.createElement("ul");
+
+
+if (eliminatedByWeek[week]) {
+const elimList = eliminatedByWeek[week].join(", ");
+const li = document.createElement("li");
+li.innerHTML = `💀 <strong>Survivor:</strong> Eliminated: ${elimList}`;
+list.appendChild(li);
+}
+
+if (payoutByWeek[week]) {
+  for (const payout of payoutByWeek[week]) {
+    const li = document.createElement("li");
+    li.innerHTML = `💰 <strong>${payout.payout_text}:</strong> ${payout.owner} (${payout.points} pts)`;
+    list.appendChild(li);
+  }
+}
+
+
+for (const entry of weekMap[week]) {
+const li = document.createElement("li");
+li.innerHTML = `${entry.award}: <strong>${entry.owner}</strong>`;
+list.appendChild(li);
+}
+
+
+details.appendChild(list);
+container.appendChild(details);
+}
+
+// --- Build Summary Overview ---
+const summaryCounts = {};
+
+// Payouts
+payoutData.forEach(entry => {
+  const owner = entry.owner;
+  if (!summaryCounts[owner]) summaryCounts[owner] = { payouts: 0, regression: 0, crawlspace: 0, clipboard: 0 };
+  summaryCounts[owner].payouts++;
+});
+
+// Awards
+rows.forEach(row => {
+  const owner = row[index.owner];
+  const award = row[index.award];
+  if (!owner || !award) return;
+
+  if (!summaryCounts[owner]) summaryCounts[owner] = { payouts: 0, regression: 0, crawlspace: 0, clipboard: 0 };
+
+  if (award.includes("Regression")) summaryCounts[owner].regression++;
+  else if (award.includes("Crawlspace")) summaryCounts[owner].crawlspace++;
+  else if (award.includes("Clipboard")) summaryCounts[owner].clipboard++;
+});
+
+// Survivor exits
+for (const [owner, week] of Object.entries(survivorData.eliminated)) {
+  if (!summaryCounts[owner]) summaryCounts[owner] = { payouts: 0, regression: 0, crawlspace: 0, clipboard: 0 };
+  summaryCounts[owner].eliminated = week;
+}
+// Remaining survivor players (not eliminated)
+survivorData.remaining.forEach(owner => {
+  if (!summaryCounts[owner]) summaryCounts[owner] = { payouts: 0, regression: 0, crawlspace: 0, clipboard: 0 };
+  summaryCounts[owner].eliminated = "Still Alive";
+});
+
+// Render table
+const summaryTable = document.querySelector("#weekly-summary-overview tbody");
+Object.entries(summaryCounts)
+  .sort((a, b) => a[0].localeCompare(b[0]))
+  .forEach(([owner, stats]) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${owner}</td>
+      <td>${stats.payouts || 0}</td>
+      <td>${stats.eliminated ?? "—"}</td>
+      <td>${stats.regression || 0}</td>
+      <td>${stats.crawlspace || 0}</td>
+      <td>${stats.clipboard || 0}</td>
+    `;
+    summaryTable.appendChild(tr);
+  });
+  makeTableSortable(document.getElementById("weekly-summary-overview"));
+});
 </script>
 </body>
 </html>

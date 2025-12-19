@@ -1,0 +1,174 @@
+[
+  {
+    "week": 1,
+    "payout_text": "Highest Scoring Team",
+    "team": "Matt Bryant",
+    "owner": "RP",
+    "points": 134.74,
+    "players": [
+      "Saquon Barkley",
+      "George Kittle",
+      "Ladd McConkey",
+      "James Cook III",
+      "Zay Flowers",
+      "Bo Nix",
+      "Deebo Samuel",
+      "Keon Coleman",
+      "Vikings D/ST",
+      "Matt Gay",
+      "Jalen McMillan"
+    ]
+  },
+  {
+    "week": 2,
+    "payout_text": "Top 1\u00d7WR Score",
+    "team": "Mike",
+    "owner": "MC",
+    "points": 36.2,
+    "players": [
+      "Malik Nabers"
+    ]
+  },
+  {
+    "week": 3,
+    "payout_text": "Top 1\u00d7QB Score",
+    "team": "G Flynn",
+    "owner": "GF",
+    "points": 32.12,
+    "players": [
+      "Caleb Williams"
+    ]
+  },
+  {
+    "week": 4,
+    "payout_text": "Top 1\u00d7RB Score",
+    "team": "Mike",
+    "owner": "MC",
+    "points": 35.5,
+    "players": [
+      "Ashton Jeanty"
+    ]
+  },
+  {
+    "week": 5,
+    "payout_text": "Highest Scoring Team",
+    "team": "Run-CMC (FKA Adrian Beatyurson)",
+    "owner": "CC",
+    "points": 159.42,
+    "players": [
+      "Christian McCaffrey",
+      "Jaxon Smith-Njigba",
+      "Jake Bates",
+      "Marvin Harrison Jr.",
+      "Emeka Egbuka",
+      "Chris Olave",
+      "Drake Maye",
+      "Tyler Warren",
+      "Tyjae Spears",
+      "Javonte Williams",
+      "Bills D/ST"
+    ]
+  },
+  {
+    "week": 6,
+    "payout_text": "Top Individual Player Score",
+    "team": "Big Green Roosah",
+    "owner": "DP",
+    "points": 35.8,
+    "players": [
+      "Bijan Robinson"
+    ]
+  },
+  {
+    "week": 7,
+    "payout_text": "Top 2\u00d7WR Score",
+    "team": "Team Kann",
+    "owner": "AK",
+    "points": 50.1,
+    "players": [
+      "A.J. Brown",
+      "Davante Adams"
+    ]
+  },
+  {
+    "week": 8,
+    "payout_text": "Top 2\u00d7RB Score",
+    "team": "Matt Bryant",
+    "owner": "RP",
+    "points": 71.0,
+    "players": [
+      "James Cook III",
+      "Saquon Barkley"
+    ]
+  },
+  {
+    "week": 9,
+    "payout_text": "Highest Scoring Team",
+    "team": "Team Kann",
+    "owner": "AK",
+    "points": 152.86,
+    "players": [
+      "Brian Thomas Jr.",
+      "Lamar Jackson",
+      "Davante Adams",
+      "Kyren Williams",
+      "Sam LaPorta",
+      "Trey Benson",
+      "Packers D/ST",
+      "Ka'imi Fairbairn",
+      "Bam Knight",
+      "Kyle Monangai",
+      "TreVeyon Henderson"
+    ]
+  },
+  {
+    "week": 10,
+    "payout_text": "Top Combo: 1\u00d7QB, 1\u00d7WR",
+    "team": "G Flynn",
+    "owner": "GF",
+    "points": 46.5,
+    "players": [
+      "Caleb Williams",
+      "Drake London"
+    ]
+  },
+  {
+    "week": 11,
+    "payout_text": "Top 1\u00d7D/ST Score",
+    "team": "Big Green Roosah",
+    "owner": "DP",
+    "points": 22.0,
+    "players": [
+      "Steelers D/ST"
+    ]
+  },
+  {
+    "week": 13,
+    "payout_text": "Highest Scoring Team",
+    "team": "Mike",
+    "owner": "MC",
+    "points": 148.82,
+    "players": [
+      "Ashton Jeanty",
+      "Josh Allen",
+      "DeVonta Smith",
+      "Aaron Jones Sr.",
+      "Hunter Henry",
+      "Kimani Vidal",
+      "Seahawks D/ST",
+      "Jameson Williams",
+      "Christian Watson",
+      "Chase McLaughlin"
+    ]
+  },
+  {
+    "week": 14,
+    "payout_text": "Top 1\u00d7K Score",
+    "team": "Hot Garbage",
+    "owner": "MS",
+    "points": 24.0,
+    "players": [
+      "Brandon Aubrey"
+    ]
+  }
+]

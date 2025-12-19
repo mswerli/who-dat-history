@@ -1,8 +1,8 @@
 Category,Record,Owner,Detail,Points,Year,Week
 Team Game,Most Points,DW,,201.98,2021,4
-Team Game,Least Points,DP,,45.5,2021,15
-Team Season,Most Points,AK,,10562.52,,
-Team Season,Least Points,MC,,1592.1,,
+Team Game,Least Points,ac,,0.0,2025,7
+Team Season,Most Points,AK,,11229.52,,
+Team Season,Least Points,DK,,600.86,,
 Single Game,Top Player,MS,Josh Allen,57.88,2024,14
 Single Game,Top WR,dk,Tyreek Hill,57.4,2020,12
 Single Game,Top RB,TM,Joe Mixon,53.1,2022,9
@@ -10,4 +10,3 @@ Single Game,Top TE,CC,Taysom Hill,40.52,2024,11
 Single Game,Top QB,MS,Josh Allen,57.88,2024,14
 Single Game,Top K,DW,Jake Moody,26.0,2024,1
 Single Game,Top D/ST,DW,Patriots D/ST,35.0,2019,2
-Season,Top Player,DP,Lamar Jackson,758.08,,
