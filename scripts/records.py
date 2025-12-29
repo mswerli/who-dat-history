@@ -78,14 +78,14 @@ for year in years:
                         }
 
 # Team season totals
-season_high = max(team_season_totals.items(), key=lambda x: x[1])
-season_low = min(team_season_totals.items(), key=lambda x: x[1])
+#season_high = max(team_season_totals.items(), key=lambda x: x[1])
+#season_low = min(team_season_totals.items(), key=lambda x: x[1])
 
 records.extend([
     {"Category": "Team Game", "Record": "Most Points", "Owner": team_game_high["owner"], "Detail": "", "Points": round(team_game_high["points"], 2), "Year": team_game_high["year"], "Week": team_game_high["week"]},
     {"Category": "Team Game", "Record": "Least Points", "Owner": team_game_low["owner"], "Detail": "", "Points": round(team_game_low["points"], 2), "Year": team_game_low["year"], "Week": team_game_low["week"]},
-    {"Category": "Team Season", "Record": "Most Points", "Owner": season_high[0], "Detail": "", "Points": round(season_high[1], 2), "Year": "", "Week": ""},
-    {"Category": "Team Season", "Record": "Least Points", "Owner": season_low[0], "Detail": "", "Points": round(season_low[1], 2), "Year": "", "Week": ""},
+#    {"Category": "Team Season", "Record": "Most Points", "Owner": season_high[0], "Detail": "", "Points": round(season_high[1], 2), "Year": "", "Week": ""},
+#    {"Category": "Team Season", "Record": "Least Points", "Owner": season_low[0], "Detail": "", "Points": round(season_low[1], 2), "Year": "", "Week": ""},
     {"Category": "Single Game", "Record": "Top Player", "Owner": player_game_high["owner"], "Detail": player_game_high["name"], "Points": round(player_game_high["points"], 2), "Year": player_game_high["year"], "Week": player_game_high["week"]}
 ])
 
