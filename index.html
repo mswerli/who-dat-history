@@ -734,44 +734,27 @@ Promise.all([
 
   // --- Build awards: carry-forward award name within a week ---
   // The CSV format often has Award on first row, then blank Award cells for additional winners.
-  let currentWeek = null;
-  let currentAward = null;
+  // --- Build awards: ONE winner per award per week ---
+aRows.forEach(r => {
+  const week = (aIdx.week >= 0) ? (r[aIdx.week] || "").trim() : "";
+  const owner = (aIdx.owner >= 0) ? (r[aIdx.owner] || "").trim() : "";
+  const award = (aIdx.award >= 0) ? (r[aIdx.award] || "").trim() : "";
+  const detail = (aIdx.detail >= 0) ? (r[aIdx.detail] || "").trim() : "";
+  const value = (aIdx.value >= 0) ? (r[aIdx.value] || "").trim() : "";
 
-  aRows.forEach(r => {
-    const week = (aIdx.week >= 0) ? (r[aIdx.week] || "").trim() : "";
-    const owner = (aIdx.owner >= 0) ? (r[aIdx.owner] || "").trim() : "";
-    const awardCell = (aIdx.award >= 0) ? (r[aIdx.award] || "").trim() : "";
-    const detail = (aIdx.detail >= 0) ? (r[aIdx.detail] || "").trim() : "";
-    const value = (aIdx.value >= 0) ? (r[aIdx.value] || "").trim() : "";
+  // Only rows that DEFINE an award count
+  if (!week || !award || !owner) return;
 
-    if (!week) return;
+  const w = String(week);
+  const wk = ensureWeek(w);
 
-    const w = String(week);
-    ensureWeek(w);
+  wk.awards[award] = {
+    owners: new Set([owner]),
+    detail,
+    value
+  };
+});
 
-    if (w !== currentWeek) {
-      currentWeek = w;
-      currentAward = null;
-    }
-
-    if (awardCell) {
-      currentAward = awardCell;
-      if (!weekMap[w].awards[currentAward]) {
-        weekMap[w].awards[currentAward] = { owners: new Set(), detail: "", value: "" };
-      }
-      // if the first line includes detail/value, keep it
-      if (detail) weekMap[w].awards[currentAward].detail = detail;
-      if (value) weekMap[w].awards[currentAward].value = value;
-    }
-
-    // Add winner to the active award
-    if (currentAward && owner) {
-      if (!weekMap[w].awards[currentAward]) {
-        weekMap[w].awards[currentAward] = { owners: new Set(), detail: "", value: "" };
-      }
-      weekMap[w].awards[currentAward].owners.add(owner);
-    }
-  });
 
   // --- Payouts (per week) ---
   (payoutData || []).forEach(p => {
